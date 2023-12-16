@@ -1,4 +1,7 @@
-from sklearn.datasets import fetch_olivetti_faces
+import numpy as np
 
-faces_all = fetch_olivetti_faces()
-print(faces_all.DESCR)
+a = np.array([[1, 2, 3],
+              [4, 5, 6],
+              [7, 8, 9]])
+
+print(a[:-2])
