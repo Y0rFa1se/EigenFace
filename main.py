@@ -1,4 +1,4 @@
-# import cv2
+import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import pickle
@@ -23,14 +23,45 @@ def decompose(img, number_of_basis = 50):
     comp *= scaler
     comp += M
 
-    return comp.reshape(original_shape)
+    return comp.reshape(original_shape), coeffecients
 
+img_path = [
+    "samples/11.jpg",
+    "samples/12.jpg",
+    "samples/21.jpeg",
+    "samples/22.jpeg"
+]
+images = []
+for path in img_path:
+    img = cv2.imread(path)
+    img = cv2.resize(img, (47, 62))
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    images.append(img)
 
-from sklearn.datasets import fetch_lfw_people
+images = np.array(images)
+images = images.astype(np.float64)
+images /= 255/2
+images -= 1
 
-lfw_people = fetch_lfw_people(min_faces_per_person=70).images
-sample = lfw_people[10]
-number_of_basis = int(input())
+# 1
+number_of_basis = [1, 5, 10, 50, 100, 300, 500, 1000, 2000]
+for n in number_of_basis:
+    comp, _ = decompose(images[0], n)
+    plt.imsave(f"results/1_{n}.jpg", comp, cmap="gray")
 
-plt.imsave("photos/original.png", sample, cmap="gray")
-plt.imsave("photos/decomposed.png", decompose(sample, number_of_basis), cmap="gray")
+# 2
+coeffitients = []
+for img in images:
+    _, coef = decompose(img)
+    coeffitients.append(coef)
+    
+for i in range(images.shape[0]):
+    for j in range(images.shape[0]):
+        if i == j:
+            continue
+        
+        cos_sim = np.dot(coeffitients[i], coeffitients[j])
+        cos_sim /= (np.linalg.norm(coeffitients[i]) * np.linalg.norm(coeffitients[j]))
+        print(cos_sim)
+        
+    print()
