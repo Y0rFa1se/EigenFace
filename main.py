@@ -77,9 +77,14 @@ test_images -= 1
 
 # 1
 number_of_basis = [1, 5, 10, 50, 100, 300, 500, 1000, 2000]
+coef = np.array([])
 for n in number_of_basis:
-    comp, _ = decompose(registered_images[0], n)
+    comp, coef = decompose(registered_images[0], n)
     plt.imsave(f"results/1_{n}.jpg", comp, cmap="gray")
+    
+with open("coef.txt", "w") as file:
+    for item in list(coef):
+        file.write("%s\n" % item)
 
 # 2
 registered_coef = []
